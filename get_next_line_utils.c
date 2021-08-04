@@ -6,7 +6,7 @@
 /*   By: luizfern <lfluiz.lf@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/04 02:47:06 by luizfern          #+#    #+#             */
-/*   Updated: 2021/08/04 02:55:41 by luizfern         ###   ########.fr       */
+/*   Updated: 2021/08/04 20:52:47 by luizfern         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,7 @@ void	*ft_calloc(size_t nmemb, size_t size)
 	if (!pointer)
 		return (NULL);
 	while (i < (nmemb * size))
-	{
-		((unsigned char *)pointer)[i] = '\0';
-		i++;
-	}
+		((unsigned char *)pointer)[i++] = '\0';
 	return (pointer);
 }
 
@@ -33,34 +30,25 @@ size_t	ft_strlen(const char *str)
 {
 	size_t	len;
 
+	len = 0;
 	if (!str)
 		return (0);
-	len = 0;
 	while (str[len])
 		len++;
 	return (len);
 }
 
-char	*ft_strchr(const char *str, int c)
+int	ft_custom_strchr(char *str, char c)
 {
-	unsigned int	i;
-
 	if (!str)
-		return (NULL);
-	if (c == 0)
-	{
-		i = 0;
-		while (str[i])
-			i++;
-		return ((char *)str + i);
-	}
+		return (0);
 	while (*str != '\0')
 	{
-		if (*str == (char)c)
-			return ((char *)str);
+		if (*str == c)
+			return (1);
 		str++;
 	}
-	return (NULL);
+	return (0);
 }
 
 char	*ft_custom_strjoin(char *s1, char *s2)
@@ -68,12 +56,14 @@ char	*ft_custom_strjoin(char *s1, char *s2)
 	char	*strconcat;
 	int		i;
 	int		j;
+	int		size_strconcat;
 
 	i = 0;
 	j = 0;
+	size_strconcat = (ft_strlen(s1) + ft_strlen(s2));
 	if (!s1 && !s2)
 		return (NULL);
-	strconcat = (char *)ft_calloc((ft_strlen(s1) + ft_strlen(s2) + 1), sizeof(char));
+	strconcat = (char *)ft_calloc((size_strconcat + 1), sizeof(char));
 	if (!strconcat)
 		return (NULL);
 	while (s1 && s1[i])
@@ -86,4 +76,3 @@ char	*ft_custom_strjoin(char *s1, char *s2)
 	free(s1);
 	return (strconcat);
 }
-

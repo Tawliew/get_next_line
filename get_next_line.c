@@ -1,13 +1,14 @@
 #include "get_next_line.h"
-
-char	*before_line_breaker(char *persist)
+static	char	*before_selector(char *persist)
 {
 	char	*current_line;
 	int		i;
+	int		j;
 
+	i = 0;
+	j = 0;
 	if (!persist)
 		return (NULL);
-	i = 0;
 	while (persist[i] && persist[i] != '\n')
 		i++;
 	if (persist[i] == '\n')
@@ -15,26 +16,26 @@ char	*before_line_breaker(char *persist)
 	current_line = (char *)ft_calloc((i + 1), sizeof(char));
 	if (!current_line)
 		return (NULL);
-	i = 0;
-	while (persist[i] && persist[i] != '\n')
+	while (persist[j] && persist[j] != '\n')
 	{
-		current_line[i] = persist[i];
-		i++;
+		current_line[j] = persist[j];
+		j++;
 	}
-	if (persist[i] == '\n')
-		current_line[i] = persist[i];
+	if (persist[j] == '\n')
+		current_line[j] = persist[j];
 	return (current_line);
 }
 
-char	*after_line_breaker(char *persist)
+static	char	*after_selector(char *persist)
 {
 	char	*next_line;
 	int		i;
 	int		j;
 
+	i = 0;
+	j = 0;
 	if (!persist)
 		return (NULL);
-	i = 0;
 	while (persist[i] && persist[i] != '\n')
 		i++;
 	if (!persist[i])
@@ -46,22 +47,33 @@ char	*after_line_breaker(char *persist)
 	if (!next_line)
 		return (NULL);
 	i++;
-	j = 0;
 	while (persist[i] != '\0')
 		next_line[j++] = persist[i++];
 	free(persist);
 	return (next_line);
 }
 
-char	*verify_end_file(char *persist, ssize_t ret, char *current_line)
+static char	*end_verifier(char *persist, ssize_t size_read, char *current_line)
 {
-	if (!persist && ret == 0 && ft_strlen(current_line) == 0)
+	if (!ft_strlen(current_line) == 0 && persist && size_read == 0)
 	{
 		free(current_line);
 		return (NULL);
 	}
 	else
 		return (current_line);
+}
+
+static char	*sec_verifier(int fd)
+{
+	char	*buffer;
+
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
+	buffer = (char *)ft_calloc((BUFFER_SIZE + 1), sizeof(char));
+	if (!buffer)
+		return (NULL);
+	return (buffer);
 }
 
 char	*get_next_line(int fd)
@@ -71,11 +83,11 @@ char	*get_next_line(int fd)
 	static char	*persist;
 	ssize_t		size_read;
 
-	buffer = (char *)ft_calloc((BUFFER_SIZE + 1), sizeof(char));
+	buffer = sec_verifier(fd);
 	if (!buffer)
 		return (NULL);
 	size_read = 1;
-	while (size_read != 0 && !ft_strchr(persist, '\n'))
+	while (size_read != 0 && !ft_custom_strchr(persist, '\n'))
 	{
 		size_read = read(fd, buffer, BUFFER_SIZE);
 		if (size_read == -1)
@@ -87,8 +99,8 @@ char	*get_next_line(int fd)
 		persist = ft_custom_strjoin(persist, buffer);
 	}
 	free(buffer);
-	current_line = before_line_breaker(persist);
-	persist = after_line_breaker(persist);
-	current_line = verify_end_file(persist, size_read, current_line);
+	current_line = before_selector(persist);
+	persist = after_selector(persist);
+	current_line = end_verifier(persist, size_read, current_line);
 	return (current_line);
 }
