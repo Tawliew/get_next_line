@@ -3,7 +3,8 @@ CC = gcc
 CFLAGS = -c -Wall -Werror -Wextra  
 RM = rm -f
 buff = 1
-SRCS =	get_next_line.c			
+SRCS =	get_next_line.c \
+		get_next_line_utils.c
 
 #.c to .o
 OBJ =		${SRCS:%.c=%.o}
