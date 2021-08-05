@@ -55,7 +55,7 @@ static	char	*after_selector(char *persist)
 
 static char	*end_verifier(char *persist, ssize_t size_read, char *current_line)
 {
-	if (!ft_strlen(current_line) == 0 && persist && size_read == 0)
+	if (!(ft_strlen(current_line) == 0) && persist && size_read == 0)
 	{
 		free(current_line);
 		return (NULL);
